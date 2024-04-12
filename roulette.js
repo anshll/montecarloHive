@@ -82,4 +82,25 @@ optOut.addEventListener("click", function() {
 
 if (permission) {
     // fill in with web workers and distribution
+
+    const numWorkers = (numCores / 2n);
+    const workers = [];
+
+    for (let i = 0; i < numWorkers; i++) {
+        const worker = new Worker('worker.js');
+        workers.push(worker);
+
+        // Example: Sending a message to each worker
+        worker.postMessage({ type: 'start', payload: i });
+
+        // Example: Listening for messages from workers
+        worker.onmessage = function(event) {
+            console.log('Message from Worker:', event.data);
+        };
+    }
+
+
+
+
+
 }
