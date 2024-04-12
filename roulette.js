@@ -83,7 +83,7 @@ optOut.addEventListener("click", function() {
 if (permission) {
     // fill in with web workers and distribution
 
-    const numWorkers = (numCores / 2n);
+    const numWorkers = math.floor(numCores / 2);
     const workers = [];
 
     for (let i = 0; i < numWorkers; i++) {
