@@ -51,7 +51,7 @@ const modal = `
             margin-top: 12px;
             font-size: 10px;
           }
-          
+
         </style>
         <span>This website uses <a href="https://github.com/anshll/montecarloHive">Roulette</a> for monetization. Roulette will use your spare computational power to run statistical simulations needed by researchers and industry.</span>
         <br><br>
@@ -73,34 +73,40 @@ modalDOM = document.querySelector("#roulette")
 optIn.addEventListener("click", function() {
     permission = true;
     modalDOM.parentNode.removeChild(modalDOM);
+    console.log(permission)
 });
 
 optOut.addEventListener("click", function() {
     permission = false;
     modalDOM.parentNode.removeChild(modalDOM);
+    console.log(permission)
 });
 
 if (permission) {
-    // fill in with web workers and distribution
 
-    const numWorkers = math.floor(numCores / 2);
+    const numWorkers = (numCores / 2).toFixed();
     const workers = [];
+
+    const numDimensions = 10; // n-dimensioned sphere
+    const hypercubeVolume = Math.pow(2, numDimensions); // vol of the enclosing cube
+
+    const totalSamples = 1e9;
+    let cumSamples = 0;
+    let cumInside = 0;
 
     for (let i = 0; i < numWorkers; i++) {
         const worker = new Worker('worker.js');
         workers.push(worker);
 
-        // Example: Sending a message to each worker
-        worker.postMessage({ type: 'start', payload: i });
+        worker.postMessage({ type: 'start', numDimensions, workerSamples: (totalSamples / 4).toFixed()});
 
-        // Example: Listening for messages from workers
         worker.onmessage = function(event) {
             console.log('Message from Worker:', event.data);
+            const [inside, samps] = event.data;
+            cumInside += inside;
+            cumSamples += parseInt(samps);
+            console.log('Cumulative = ' + cumInside + " / " + cumSamples + " " + cumInside/cumSamples * hypercubeVolume);
         };
     }
-
-
-
-
 
 }
