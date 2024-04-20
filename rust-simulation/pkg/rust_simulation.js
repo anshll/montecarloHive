@@ -1,12 +1,8 @@
-/*
-Uses all content from rust_simulation.js, so we only need one file:
- */
-
 let wasm;
 
 const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
 
-if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); }
+if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
 
 let cachedUint8Memory0 = null;
 
@@ -21,16 +17,16 @@ function getStringFromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
-
 /**
- * @param {number} num_samples
- * @param {number} num_dimensions
- * @param {number} _worker_index
- * @param {number} _num_workers
- * @returns {number}
- */
-function monte_carlo_hypersphere_volume(num_samples, num_dimensions, _worker_index, _num_workers) {
-    return wasm.monte_carlo_hypersphere_volume(num_samples, num_dimensions, _worker_index, _num_workers);
+* @param {number} num_samples
+* @param {number} num_dimensions
+* @param {number} _worker_index
+* @param {number} _num_workers
+* @returns {number}
+*/
+export function monte_carlo_hypersphere_volume(num_samples, num_dimensions, _worker_index, _num_workers) {
+    const ret = wasm.monte_carlo_hypersphere_volume(num_samples, num_dimensions, _worker_index, _num_workers);
+    return ret;
 }
 
 function notDefined(what) { return () => { throw new Error(`${what} is not defined`); }; }
@@ -109,46 +105,21 @@ function initSync(module) {
 async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
-    const wasmUrl = 'rust_simulation_bg.wasm';
-
+    if (typeof input === 'undefined') {
+        input = new URL('rust_simulation_bg.wasm', import.meta.url);
+    }
     const imports = __wbg_get_imports();
 
-    if (typeof input === 'undefined') {
-        input = wasmUrl;
-    }
-
-    // No need to use `fetch` if input is already a URL
-    if (!(input instanceof URL)) {
-        input = new URL(input, self.location.href);
+    if (typeof input === 'string' || (typeof Request === 'function' && input instanceof Request) || (typeof URL === 'function' && input instanceof URL)) {
+        input = fetch(input);
     }
 
     __wbg_init_memory(imports);
 
-    const { instance, module } = await __wbg_load(await fetch(input), imports);
+    const { instance, module } = await __wbg_load(await input, imports);
 
     return __wbg_finalize_init(instance, module);
 }
 
-/*
- * Actual Worker Code:
- */
-
-// Listen for messages from the main thread
-self.onmessage = async function(event) {
-    if (event.data.type === 'start') {
-
-        const workerIndex = event.data.workerID; // The index of this worker
-        const numWorkers = event.data.numWorkers; // Total number of workers
-
-        const numSamples = event.data.workerSamples; // Number of samples for the simulation
-        console.log(numSamples);
-        const numDimensions = event.data.numDimensions; // Number of dimensions
-
-        await __wbg_init();
-
-        let result = monte_carlo_hypersphere_volume(numSamples, numDimensions, workerIndex, numWorkers)
-
-        self.postMessage([result, numSamples / numWorkers]);
-
-    }
-};
+export { initSync }
+export default __wbg_init;

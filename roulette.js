@@ -8,7 +8,10 @@ console.log("Number of CPU cores:", numCores);
 /**
  Potential Security Weaknesses
  * Edit the parent js to auto delete the modal based on its ID | generate unique ID's at runtime
- * Edit the parent js to auto delete the modal just because it's new | idk
+ * Edit the parent js to auto delete the modal just because it's new | IDK
+ *
+ * Security Center Point: The Modal MUST Show
+ * Why? If script placed by hackers, users and website owner will immediately see
  */
 
 const modal = `
