@@ -8,3 +8,12 @@ Mining crypto is an embarrassingly parallel problem, meaning it can be infinitel
 Putting this script in a site will prompt a user to consent or not. It will run Webworkers running Rust compiled to WebAssembly to do many Monte Carlo simulations per second. Ideally this will be a Monte Carlo simulation that is actually useful for business or research, currently just doing a standard one (finding the volume of a 10D sphere). 
 
 Read the PDF poster for a nice overview.
+
+Demo Available here: https://replit.com/@Anshul75/betterAds?v=1#roulette.js (sadly need to fork to run it)
+Here's some images though:
+
+An example news website, that could use this for monetization. Notice the popup.
+<img width="713" alt="Screenshot 2024-11-13 at 10 59 03 AM" src="https://github.com/user-attachments/assets/29dace3a-293a-4012-89b2-5dc17a5f20b1">
+
+The console output, showing it detected the number of cores on the computer and will only use some of them (currently set to 1/3). Notice it does about 6 million computations per worker (parallel process); this is hyper optimized with Rust WebAssembly and parallelization---my previous Javascript only code was at least 20x slower.
+<img width="631" alt="Screenshot 2024-11-13 at 10 59 38 AM" src="https://github.com/user-attachments/assets/dcba06e8-0ade-490f-8bef-d5b145da4ae6">
